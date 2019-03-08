@@ -4,11 +4,16 @@
   "main": "index.js",
   "author": "Will Mitchell <wakamoleguy@gmail.com>",
   "license": "SEE LICENSE IN LICENSE.md",
+  "scripts": {
+    "build": "./node_modules/.bin/tsc",
+    "lint": "./node_modules/.bin/tslint src/*",
+    "start": "node ./dist"
+  },
   "devDependencies": {
-    "eslint": "^5.12.0",
     "eslint-config-prettier": "^3.5.0",
     "eslint-plugin-prettier": "^3.0.1",
     "prettier": "^1.15.3",
+    "tslint": "^5.13.1",
     "typescript": "^3.3.3333"
   }
 }
