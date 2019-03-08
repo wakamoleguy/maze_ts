@@ -1,7 +1,13 @@
-const world = 'World'
+import bodyParser from 'body-parser'
+import express from 'express'
+import * as http from 'http'
 
-export function hello(word: string = world): string {
-  return `Hello, ${word}!`
-}
+const app = express()
+app.use(bodyParser.json())
 
-console.log(hello(), 'Do not forget to rename the package!')
+const server = http.createServer(app)
+const port = global.process.env.PORT || 3000
+server.listen(port)
+
+/* tslint:disable-next-line:no-console */
+console.log('Server listening on port', port)
