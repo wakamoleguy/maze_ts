@@ -1,10 +1,27 @@
-import bodyParser from 'body-parser'
-import express from 'express'
-import session from 'express-session'
+import * as bodyParser from 'body-parser'
+import * as express from 'express'
+import * as session from 'express-session'
 import * as http from 'http'
+import * as memorystore from 'memorystore'
 import AuthenticationMiddleware from './authentication/AuthenticationMiddleware'
 
+const MemoryStore = memorystore(session)
+
 const app = express()
+app.use(
+  session({
+    cookie: {
+      maxAge: 86400 * 1000 * 7,
+      secure: false,
+    },
+    resave: true,
+    saveUninitialized: false,
+    secret: 'secret',
+    store: new MemoryStore({
+      checkPeriod: 86400000,
+    }),
+  })
+)
 app.use(bodyParser.json())
 app.use(AuthenticationMiddleware)
 
