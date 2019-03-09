@@ -11,6 +11,7 @@
     "test": "yarn jest"
   },
   "devDependencies": {
+    "@types/dotenv": "^6.1.0",
     "@types/jest": "^24.0.10",
     "eslint-config-prettier": "^3.5.0",
     "eslint-plugin-prettier": "^3.0.1",
@@ -21,5 +22,8 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.3.3333"
+  },
+  "dependencies": {
+    "dotenv": "^6.2.0"
   }
 }
