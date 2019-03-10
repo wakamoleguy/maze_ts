@@ -21,5 +21,5 @@ export interface Revision {
   version: number
   start: StartPoint
   destination: EndPoint
-  map: Tile[][]
+  tileMap: Tile[][]
 }
