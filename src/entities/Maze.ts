@@ -14,23 +14,20 @@ export type Direction = 'north' | 'south' | 'east' | 'west'
 
 export type Tile = 0 | 1
 
-export interface StartPoint {
+export interface Point {
   x: number
   z: number
+}
+
+export interface StartPoint extends Point {
   direction: Direction
 }
 
-export interface EndPoint {
-  x: number
-  z: number
-}
-
 export interface Revision {
-  id: string
   maze: Maze
   version: number
   start: StartPoint
-  destination: EndPoint
+  destination: Point
   tileMap: Tile[][]
 }
 
@@ -51,7 +48,6 @@ export function create(user: User): Revision {
 
   const revision: Revision = {
     destination,
-    id: v4(),
     maze,
     start,
     tileMap,
@@ -59,4 +55,42 @@ export function create(user: User): Revision {
   }
 
   return revision
+}
+
+export function setStart(revision: Revision, start: StartPoint): Revision {
+  return {
+    ...revision,
+    start,
+  }
+}
+
+export function setDestination(
+  revision: Revision,
+  destination: Point
+): Revision {
+  return {
+    ...revision,
+    destination,
+  }
+}
+
+export function setTile(
+  revision: Revision,
+  point: Point,
+  tile: Tile
+): Revision {
+  const tileMap = revision.tileMap.map((row, z) =>
+    row.map((oldTile, x) => (z === point.z && x === point.x ? tile : oldTile))
+  )
+  return {
+    ...revision,
+    tileMap,
+  }
+}
+
+export function createRevision(revision: Revision): Revision {
+  return {
+    ...revision,
+    version: revision.version + 1,
+  }
 }

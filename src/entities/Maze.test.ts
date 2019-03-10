@@ -1,5 +1,13 @@
 import { User } from '../entities/User'
-import { create, Tile } from './Maze'
+import {
+  create,
+  createRevision,
+  setDestination,
+  setStart,
+  setTile,
+  StartPoint,
+  Tile,
+} from './Maze'
 
 const WAKA: User = { id: 'wakamoleguy' }
 
@@ -54,6 +62,95 @@ describe('Maze', () => {
       it('has an id', () => {
         expect(revision.maze.id).toBeDefined()
       })
+    })
+  })
+
+  describe('setStart', () => {
+    it('returns a new revision', () => {
+      const initial = create(WAKA)
+      const newStart: StartPoint = { x: 5, z: 5, direction: 'north' }
+      const revised = setStart(initial, newStart)
+      expect(revised).not.toBe(initial)
+    })
+
+    it('updates the start point', () => {
+      const initial = create(WAKA)
+      const newStart: StartPoint = { x: 5, z: 5, direction: 'north' }
+      const revised = setStart(initial, newStart)
+      expect(revised.start).toEqual(newStart)
+    })
+  })
+
+  describe('setDestination', () => {
+    it('returns a new revision', () => {
+      const initial = create(WAKA)
+      const newDestination = { x: 5, z: 5 }
+      const revised = setDestination(initial, newDestination)
+      expect(revised).not.toBe(initial)
+    })
+    it('returns a new revision', () => {
+      const initial = create(WAKA)
+      const newDestination = { x: 5, z: 5 }
+      const revised = setDestination(initial, newDestination)
+      expect(revised.destination).toEqual(newDestination)
+    })
+  })
+
+  describe('setTile', () => {
+    it('returns a new revision', () => {
+      const initial = create(WAKA)
+      const coords = { x: 5, z: 5 }
+      const revised = setTile(initial, coords, 1)
+      expect(revised).not.toBe(initial)
+    })
+
+    it('sets the tile at the coordinate', () => {
+      const initial = create(WAKA)
+      const coords = { x: 5, z: 5 }
+      let revised = setTile(initial, coords, 0)
+      expect(revised.tileMap[coords.z][coords.x]).toBe(0)
+      revised = setTile(initial, coords, 1)
+      expect(revised.tileMap[coords.z][coords.x]).toBe(1)
+    })
+
+    it('leaves all other locations the same', () => {
+      const initial = create(WAKA)
+      const coords = { x: 5, z: 5 }
+      const revised = setTile(initial, coords, 1)
+      revised.tileMap.forEach((row: Tile[], z) =>
+        row.forEach((tile: Tile, x) => {
+          if (z !== coords.z || x !== coords.x) {
+            expect(tile).toEqual(initial.tileMap[z][x])
+          }
+        })
+      )
+    })
+  })
+
+  describe('createRevision', () => {
+    it('returns a new revision', () => {
+      const initial = create(WAKA)
+      const draft = createRevision(initial)
+      expect(draft).not.toBe(initial)
+    })
+
+    it('matches the old revision in most ways', () => {
+      const initial = create(WAKA)
+      const draft = createRevision(initial)
+      expect(draft.maze).toBe(initial.maze)
+      expect(draft.start).toBe(initial.start)
+      expect(draft.destination).toBe(initial.destination)
+      expect(draft.tileMap).toBe(initial.tileMap)
+    })
+
+    it('increments the version number', () => {
+      const initial = create(WAKA)
+      const firstDraft = createRevision(initial)
+      const secondDraft = createRevision(firstDraft)
+
+      expect(initial.version).toBe(0)
+      expect(firstDraft.version).toBe(1)
+      expect(secondDraft.version).toBe(2)
     })
   })
 })
