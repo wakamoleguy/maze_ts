@@ -1,10 +1,10 @@
-import { EventEmitter } from 'events'
+export interface InterfaceAdapter {
+  on(action: string, callback: (message: string) => Promise<string>): void
+}
 
 const Controller = {
-  create(interfaceAdapter: EventEmitter) {
-    interfaceAdapter.on('echo', (...args) => {
-      interfaceAdapter.emit('out', ...args)
-    })
+  create(interfaceAdapter: InterfaceAdapter) {
+    interfaceAdapter.on('echo', (message) => Promise.resolve(message))
   },
 }
 

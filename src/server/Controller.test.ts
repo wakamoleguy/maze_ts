@@ -1,19 +1,19 @@
-import { EventEmitter } from 'events'
 import Controller from './Controller'
 
 describe('Controller', () => {
   describe('create', () => {
-    it('echoes the interface adapter echo event', (done) => {
-      const interfaceAdapter = new EventEmitter()
-      const callback = (arg: string) => {
-        expect(arg).toBe('Hello, world!')
-        done()
+    it('echoes the interface adapter echo action', async () => {
+      const interfaceAdapter = {
+        on: jest.fn(),
       }
-      interfaceAdapter.on('out', callback)
-
       Controller.create(interfaceAdapter)
+      expect(interfaceAdapter.on).toHaveBeenCalledWith(
+        'echo',
+        expect.any(Function)
+      )
 
-      interfaceAdapter.emit('echo', 'Hello, world!')
+      const callback = interfaceAdapter.on.mock.calls[0][1]
+      expect(await callback('Echo echo e...')).toBe('Echo echo e...')
     })
   })
 
