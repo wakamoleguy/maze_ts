@@ -31,10 +31,3 @@ describe('Controller', () => {
     expect(response).toEqual([{ id: 'wakamoleguy' }, { id: 'will' }])
   })
 })
-
-/* What do I want it to do?
-  1. Give it a store and a UI/API adapter
-  2. It subscribes to UI changes?
-  3. It performs actions and uses the store to persist them
-  4. It selects objects from the store as needed.
-  */
