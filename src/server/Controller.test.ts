@@ -4,18 +4,11 @@ import Controller from './Controller'
 
 describe('Controller', () => {
   it('echoes', async () => {
-    const interfaceAdapter = {
-      on: jest.fn(),
-    }
+    const interfaceAdapter = new ConsoleAdapter()
     const store = MemoryUserStore
     Controller.create(interfaceAdapter, store)
-    expect(interfaceAdapter.on).toHaveBeenCalledWith(
-      'echo',
-      expect.any(Function)
-    )
-
-    const callback = interfaceAdapter.on.mock.calls[0][1]
-    expect(await callback('Echo echo e...')).toBe('Echo echo e...')
+    const response = await interfaceAdapter.echo('Echo echo e...')
+    expect(response).toBe('Echo echo e...')
   })
 
   it('adds a user to the store', async () => {
@@ -23,8 +16,8 @@ describe('Controller', () => {
     const store = MemoryUserStore
     Controller.create(interfaceAdapter, store)
 
-    const response = await interfaceAdapter.emit('addUser', 'wakamoleguy')
-    expect(response).toBe('ok')
+    const response = await interfaceAdapter.userCreate('wakamoleguy')
+    expect(response).toBe(null)
   })
 
   it('lists all users in the store', async () => {
@@ -32,12 +25,10 @@ describe('Controller', () => {
     const store = MemoryUserStore
     Controller.create(interfaceAdapter, store)
 
-    await interfaceAdapter.emit('addUser', 'wakamoleguy')
-    await interfaceAdapter.emit('addUser', 'will')
-    const response = await interfaceAdapter.emit('listUsers', '')
-    expect(response).toEqual(
-      JSON.stringify([{ id: 'wakamoleguy' }, { id: 'will' }])
-    )
+    await interfaceAdapter.userCreate('wakamoleguy')
+    await interfaceAdapter.userCreate('will')
+    const response = await interfaceAdapter.userList()
+    expect(response).toEqual([{ id: 'wakamoleguy' }, { id: 'will' }])
   })
 })
 

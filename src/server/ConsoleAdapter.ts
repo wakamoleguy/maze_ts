@@ -1,18 +1,39 @@
-import { Map } from 'immutable'
-import { Maybe } from '../Maybe'
+import { User } from '../entities/User'
+import { isSome, Maybe } from '../Maybe'
+import { InterfaceAdapter } from './Controller'
 
-type Callback = (message: string) => Promise<Maybe<string>>
-const noop: Callback = () => Promise.resolve(null)
+type EchoCallback = (message: string) => Promise<string>
+type UserCreateCallback = (userId: string) => Promise<null>
+type UserListCallback = () => Promise<User[]>
 
-class ConsoleAdapter {
-  private listeners = Map<string, Callback>()
+class ConsoleAdapter implements InterfaceAdapter {
+  private echoListener: Maybe<EchoCallback> = null
+  private userCreateListener: Maybe<UserCreateCallback> = null
+  private userListListener: Maybe<UserListCallback> = null
 
-  public on(action: string, callback: Callback): void {
-    this.listeners = this.listeners.set(action, callback)
+  public onEcho = (callback: EchoCallback) => {
+    this.echoListener = callback
   }
-
-  public emit(action: string, message: string) {
-    return this.listeners.get(action, noop)(message)
+  public echo = (message: string) => {
+    if (isSome(this.echoListener)) {
+      return this.echoListener(message)
+    }
+  }
+  public onUserCreate = (callback: UserCreateCallback) => {
+    this.userCreateListener = callback
+  }
+  public userCreate = (userId: string) => {
+    if (isSome(this.userCreateListener)) {
+      return this.userCreateListener(userId)
+    }
+  }
+  public onUserList = (callback: UserListCallback) => {
+    this.userListListener = callback
+  }
+  public userList = () => {
+    if (isSome(this.userListListener)) {
+      return this.userListListener()
+    }
   }
 }
 

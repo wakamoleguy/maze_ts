@@ -1,34 +1,38 @@
 import ConsoleAdapter from './ConsoleAdapter'
 
 describe('ConsoleAdapter', () => {
-  it('calls the subscribed callback', async () => {
+  it('echoes', async () => {
     const adapter = new ConsoleAdapter()
     const callback = jest.fn().mockReturnValue(Promise.resolve('Response'))
-    adapter.on('echo', callback)
+    adapter.onEcho(callback)
 
-    const response = await adapter.emit('echo', 'Request')
+    const response = await adapter.echo('Request')
 
     expect(callback).toHaveBeenCalledWith('Request')
     expect(response).toBe('Response')
   })
 
-  it('calls only matching name callbacks', async () => {
+  it('creates users', async () => {
     const adapter = new ConsoleAdapter()
-    const callback = jest.fn().mockReturnValue(Promise.resolve('Response'))
-    const otherCallback = jest.fn().mockReturnValue(Promise.resolve('Other'))
-    adapter.on('echo', callback)
-    adapter.on('hello', otherCallback)
+    const callback = jest.fn().mockReturnValue(Promise.resolve(null))
+    adapter.onUserCreate(callback)
 
-    await adapter.emit('echo', 'Request')
+    const response = await adapter.userCreate('User Id')
 
-    expect(callback).toHaveBeenCalledWith('Request')
-    expect(otherCallback).not.toHaveBeenCalled()
+    expect(callback).toHaveBeenCalledWith('User Id')
+    expect(response).toBe(null)
   })
 
-  it('resolves to null if action is not understood', async () => {
+  it('lists users', async () => {
     const adapter = new ConsoleAdapter()
-    const response = await adapter.emit('echo', 'Request')
+    const callback = jest
+      .fn()
+      .mockReturnValue(Promise.resolve([{ id: 'A' }, { id: 'B' }]))
+    adapter.onUserList(callback)
 
-    expect(response).toBe(null)
+    const response = await adapter.userList()
+
+    expect(callback).toHaveBeenCalledWith()
+    expect(response).toEqual([{ id: 'A' }, { id: 'B' }])
   })
 })

@@ -2,7 +2,9 @@ import { StoreLibrary } from '../adapters/Store'
 import { User } from '../entities/User'
 
 export interface InterfaceAdapter {
-  on(action: string, callback: (message: string) => Promise<string>): void
+  onEcho(callback: (message: string) => Promise<string>): void
+  onUserCreate(callback: (userId: string) => Promise<null>): void
+  onUserList(callback: () => Promise<User[]>): void
 }
 
 class Controller<Store> {
@@ -22,9 +24,9 @@ class Controller<Store> {
   ) {
     this.storeLib = store
     this.store = store.empty()
-    interfaceAdapter.on('echo', this.echo)
-    interfaceAdapter.on('addUser', this.addUser)
-    interfaceAdapter.on('listUsers', this.listUsers)
+    interfaceAdapter.onEcho(this.echo)
+    interfaceAdapter.onUserCreate(this.addUser)
+    interfaceAdapter.onUserList(this.listUsers)
   }
 
   private echo = (message: string) => {
@@ -34,11 +36,11 @@ class Controller<Store> {
   private addUser = (userId: string) => {
     const user: User = { id: userId }
     this.store = this.storeLib.create(this.store, user)
-    return Promise.resolve('ok')
+    return Promise.resolve(null)
   }
 
-  private listUsers = (_: string) => {
-    return Promise.resolve(JSON.stringify(this.storeLib.list(this.store)))
+  private listUsers = () => {
+    return Promise.resolve(this.storeLib.list(this.store))
   }
 }
 
