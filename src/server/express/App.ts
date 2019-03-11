@@ -19,6 +19,7 @@ const App = {
     }
 
     const app = express()
+    app.set('view engine', 'pug')
 
     app.use(
       session({
@@ -39,6 +40,10 @@ const App = {
     app.use(AuthenticationMiddleware)
 
     app.get('/echo', adapter.echo)
+
+    app.get('/', (_, res) => {
+      res.render('index', { title: 'Hey', message: 'Hello there!' })
+    })
 
     const server = http.createServer(app)
     const port = global.process.env.PORT || 3000

@@ -33,6 +33,7 @@
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "immutable": "^4.0.0-rc.12",
-    "memorystore": "^1.6.1"
+    "memorystore": "^1.6.1",
+    "pug": "^2.0.3"
   }
 }
