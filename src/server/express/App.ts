@@ -42,7 +42,13 @@ const App = {
     app.get('/echo', adapter.echo)
 
     app.get('/', (_, res) => {
-      res.render('index', { title: 'Hey', message: 'Hello there!' })
+      res.render('user', { user: res.locals.user }, (__, html) => {
+        res.render('index', {
+          message: 'Hello there!',
+          title: 'Hey',
+          user: html,
+        })
+      })
     })
 
     const server = http.createServer(app)
