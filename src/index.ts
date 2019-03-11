@@ -4,7 +4,10 @@ import * as express from 'express'
 import * as session from 'express-session'
 import * as http from 'http'
 import * as memorystore from 'memorystore'
+import MemoryUserStore from './adapters/MemoryUserStore'
 import AuthenticationMiddleware from './authentication/AuthenticationMiddleware'
+import Controller from './server/Controller'
+import ExpressAdapter from './server/ExpressAdapter'
 
 dotenv.config()
 
@@ -32,6 +35,11 @@ app.use(
 )
 app.use(bodyParser.json())
 app.use(AuthenticationMiddleware)
+
+const adapter = new ExpressAdapter()
+const controller = new Controller(adapter, MemoryUserStore)
+
+app.get('/echo', adapter.echo)
 
 app.get('/', (req, res) => {
   res.send(JSON.stringify(res.locals))
