@@ -1,52 +1,14 @@
-import * as bodyParser from 'body-parser'
-import * as dotenv from 'dotenv'
-import * as express from 'express'
-import * as session from 'express-session'
-import * as http from 'http'
-import * as memorystore from 'memorystore'
 import MemoryUserStore from './adapters/MemoryUserStore'
-import AuthenticationMiddleware from './authentication/AuthenticationMiddleware'
 import Controller from './server/Controller'
+import App from './server/express/App'
 import ExpressAdapter from './server/ExpressAdapter'
 
-dotenv.config()
-
-const MemoryStore = memorystore(session)
-
-const secret = process.env.COOKIE_SECRET
-if (!secret) {
-  throw new Error('You must provide a secret!')
-}
-
-const app = express()
-app.use(
-  session({
-    cookie: {
-      maxAge: 86400 * 1000 * 7,
-      secure: false,
-    },
-    resave: true,
-    saveUninitialized: false,
-    secret,
-    store: new MemoryStore({
-      checkPeriod: 86400000,
-    }),
-  })
-)
-app.use(bodyParser.json())
-app.use(AuthenticationMiddleware)
-
 const adapter = new ExpressAdapter()
-const controller = new Controller(adapter, MemoryUserStore)
 
-app.get('/echo', adapter.echo)
+/* tslint:disable-next-line:no-unused-expression */
+new Controller(adapter, MemoryUserStore)
 
-app.get('/', (req, res) => {
-  res.send(JSON.stringify(res.locals))
-})
-const server = http.createServer(app)
-const port = global.process.env.PORT || 3000
-server.listen(port)
+App.create(adapter)
 
 /* tslint:disable-next-line:no-console */
-console.log('Server listening on port', port)
+console.log('Server listening on port', global.process.env.PORT || 3000)
