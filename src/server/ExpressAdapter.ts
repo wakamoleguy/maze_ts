@@ -24,23 +24,28 @@ class ExpressAdapter implements InterfaceAdapter {
     const response = await this.echoListener(data)
     res.send(response)
   }
+
   public onUserCreate = (callback: UserCreateCallback) => {
     this.userCreateListener = callback
   }
-  public userCreate = (userId: string) => {
-    if (isNone(this.userCreateListener)) {
-      return
+  public userCreate = async (req: Request, res: Response) => {
+    const user: Maybe<string> = (req.query && req.query.id) || null
+    if (isNone(this.userCreateListener) || isNone(user)) {
+      throw new Error('Bad Request or not ready')
     }
-    return this.userCreateListener(userId)
+    await this.userCreateListener(user)
+    res.sendStatus(201)
   }
+
   public onUserList = (callback: UserListCallback) => {
     this.userListListener = callback
   }
-  public userList = () => {
+  public userList = async (req: Request, res: Response) => {
     if (isNone(this.userListListener)) {
       return
     }
-    return this.userListListener()
+    const data = await this.userListListener()
+    res.send(data)
   }
 }
 

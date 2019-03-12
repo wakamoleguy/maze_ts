@@ -4,6 +4,7 @@ import * as express from 'express'
 import * as session from 'express-session'
 import * as http from 'http'
 import * as memorystore from 'memorystore'
+import { isNone, Maybe } from '../../Maybe'
 import ExpressAdapter from '../ExpressAdapter'
 import AuthenticationMiddleware from './authentication/AuthenticationMiddleware'
 
@@ -39,7 +40,18 @@ const App = {
     app.use(bodyParser.json())
     app.use(AuthenticationMiddleware)
 
+    app.use((_, res, next) => {
+      const user: Maybe<string> = (res.locals && res.locals.user) || null
+      if (isNone(user)) {
+        res.sendStatus(403)
+      } else {
+        next()
+      }
+    })
+
     app.get('/echo', adapter.echo)
+    app.get('/user', adapter.userList)
+    app.get('/user/new', adapter.userCreate)
 
     app.get('/', (_, res) => {
       res.render('user', { user: res.locals.user }, (__, html) => {
